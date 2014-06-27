@@ -32,8 +32,12 @@ void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
         p.x = mod(p.x, worldsize.x);
     }
     if (length(obstacle) > 0.5) {
-        p.x -= v.x * 2.0;
-        p.y -= v.y * 2.0;
+        if (length(v) < 0.5) {
+            p.y += worldsize.y; // dislodge
+        } else {
+            p.x -= v.x * 2.0;
+            p.y -= v.y * 2.0;
+        }
     }
 }
 
@@ -44,7 +48,6 @@ void updateVelocity(inout vec2 p, inout vec2 v, vec2 obstacle) {
     }
     if (length(obstacle) > 0.5) {
         v = reflect(v, obstacle) * 0.25;
-        if (length(v) < 1.0) v *= 10.0; // dislodge
     }
 }
 
