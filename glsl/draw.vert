@@ -3,14 +3,26 @@ precision mediump float;
 #endif
 
 attribute vec2 index;
-uniform sampler2D particles;
+uniform sampler2D positions;
 uniform vec2 statesize;
 uniform vec2 worldsize;
 uniform float size;
-uniform vec2 scale;
+uniform float scale;
+
+float decode(vec2 channels) {
+    return (channels[0] * 256.0 + channels[1] * 65536.0) / scale;
+}
+
+vec2 encode(float value) {
+    value * scale;
+    float x = mod(value, 256.0) / 256.0;
+    float y = value / 65536.0;
+    return vec2(x, y);
+}
 
 void main() {
-    vec2 position = texture2D(particles, index / statesize).xy * scale.x;
-    gl_Position = vec4(position / worldsize * 2.0 - 1.0, 0, 1);
+    vec4 particle = texture2D(positions, index / statesize);
+    vec2 p = vec2(decode(particle.rg), decode(particle.ba));
+    gl_Position = vec4(p / worldsize * 2.0 - 1.0, 0, 1);
     gl_PointSize = size;
 }

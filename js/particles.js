@@ -10,7 +10,7 @@ function Particles(canvas, nparticles) {
     gl.disable(gl.DEPTH_TEST);
     this.statesize = new Float32Array([tw, th]);
     this.worldsize = new Float32Array([w, h]);
-    this.scale = new Float32Array([Math.max(w, h), Math.max(w, h) / 10]);
+    this.scale = 65536 / Math.max(w, h);
     this.size = 15;
     this.color = new Float32Array([0.14, 0.62, 1, 1]);
     this.gravity = new Float32Array([0, 0.10]);
@@ -24,8 +24,14 @@ function Particles(canvas, nparticles) {
         }
     }
 
+    function texture() {
+        return igloo.texture(null, gl.RGBA, gl.CLAMP_TO_EDGE, gl.NEAREST)
+            .blank(tw, th);
+    }
+
     this.programs = {
-        step: igloo.program('glsl/quad.vert', 'glsl/step.frag'),
+        position: igloo.program('glsl/quad.vert', 'glsl/position.frag'),
+        velocity: igloo.program('glsl/quad.vert', 'glsl/velocity.frag'),
         draw: igloo.program('glsl/draw.vert', 'glsl/draw.frag')
     };
     this.buffers = {
@@ -33,10 +39,10 @@ function Particles(canvas, nparticles) {
         indexes: igloo.array(indexes)
     };
     this.textures = {
-        fore: igloo.texture(null, gl.RGBA, gl.CLAMP_TO_EDGE, gl.NEAREST)
-            .blank(tw, th),
-        back: igloo.texture(null, gl.RGBA, gl.CLAMP_TO_EDGE, gl.NEAREST)
-            .blank(tw, th)
+        p0: texture(),
+        p1: texture(),
+        v0: texture(),
+        v1: texture()
     };
     this.framebuffers = {
         step: igloo.framebuffer()
@@ -46,41 +52,86 @@ function Particles(canvas, nparticles) {
     this.running = false;
 }
 
+Particles.encode = function(value, scale) {
+    var pair = [
+        Math.floor(value * scale % 256),
+        Math.floor(value * scale / 65536 * 256)
+    ];
+    return pair;
+};
+
+Particles.decode = function(pair, scale) {
+    return (pair[0] + pair[1] * 256) / scale;
+};
+
 Particles.prototype.fill = function() {
     var tw = this.statesize[0], th = this.statesize[1],
         w = this.worldsize[0], h = this.worldsize[1],
-        s = this.scale[0],
+        s = this.scale,
         rgba = new Uint8Array(tw * th * 4);
     for (var y = 0; y < th; y++) {
         for (var x = 0; x < tw; x++) {
-            var i = y * tw * 4 + x * 4;
-            rgba[i + 0] = Math.random() * w * (255 / s);
-            rgba[i + 1] = Math.random() * h * (255 / s);
-            rgba[i + 2] = 0;
-            rgba[i + 3] = 0;
+            var i = y * tw * 4 + x * 4,
+                px = Particles.encode(Math.random() * w, s),
+                py = Particles.encode(Math.random() * h, s);
+            rgba[i + 0] = px[0];
+            rgba[i + 1] = px[1];
+            rgba[i + 2] = py[0];
+            rgba[i + 3] = py[1];
         }
     }
-    this.textures.fore.subset(rgba, 0, 0, tw, th);
+    this.textures.p0.subset(rgba, 0, 0, tw, th);
     return this;
 };
 
+Particles.prototype.get = function() {
+    var gl = this.igloo.gl;
+    this.framebuffers.step.attach(this.textures.p0);
+    var w = this.statesize[0], h = this.statesize[1],
+        s = this.scale,
+        rgba = new Uint8Array(w * h * 4);
+    gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, rgba);
+    var particles = [];
+    for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+            var i = y * w * 4 + x * 4,
+                px = Particles.decode([rgba[i + 0], rgba[i + 1]], s),
+                py = Particles.decode([rgba[i + 2], rgba[i + 3]], s);
+            particles.push({x: px, y: py});
+        }
+    }
+    return particles;
+};
+
 Particles.prototype.swap = function() {
-    var tmp = this.textures.fore;
-    this.textures.fore = this.textures.back;
-    this.textures.back = tmp;
+    var tmp = this.textures.p0;
+    this.textures.p0 = this.textures.p1;
+    this.textures.p1 = tmp;
+    tmp = this.textures.v0;
+    this.textures.v0 = this.textures.v1;
+    this.textures.v1 = tmp;
     return this;
 };
 
 
 Particles.prototype.step = function() {
     var igloo = this.igloo, gl = igloo.gl;
-    this.framebuffers.step.bind().attach(this.textures.back);
     gl.disable(gl.BLEND);
-    this.textures.fore.bind(0);
+    this.framebuffers.step.attach(this.textures.p1);
+    this.textures.p0.bind(0);
+    this.textures.v0.bind(1);
     gl.viewport(0, 0, this.statesize[0], this.statesize[1]);
-    this.programs.step.use()
+    this.programs.position.use()
         .attrib('quad', this.buffers.quad, 2)
-        .uniformi('state', 0)
+        .uniformi('position', 0)
+        .uniformi('velocity', 1)
+        .uniform('scale', this.scale)
+        .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
+    this.framebuffers.step.attach(this.textures.v1);
+    this.programs.velocity.use()
+        .attrib('quad', this.buffers.quad, 2)
+        .uniformi('position', 0)
+        .uniformi('velocity', 1)
         .uniform('scale', this.scale)
         .uniform('gravity', this.gravity)
         .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
@@ -95,11 +146,11 @@ Particles.prototype.draw = function() {
     igloo.defaultFramebuffer.bind();
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    this.textures.fore.bind(0);
+    this.textures.p0.bind(0);
     gl.viewport(0, 0, this.worldsize[0], this.worldsize[1]);
     this.programs.draw.use()
         .attrib('index', this.buffers.indexes, 2)
-        .uniformi('particles', 0)
+        .uniformi('positions', 0)
         .uniform('statesize', this.statesize)
         .uniform('worldsize', this.worldsize)
         .uniform('size', this.size)
