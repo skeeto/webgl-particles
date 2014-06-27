@@ -27,14 +27,14 @@ vec2 encode(float value) {
 void updatePosition(inout vec2 p, inout vec2 v) {
     p += v;
     p.x = mod(p.x, worldsize.x);
-    if (p.y < 10.0) {
+    if (p.y <= 0.0) {
         p.y += worldsize.y;
     }
 }
 
 void updateVelocity(inout vec2 p, inout vec2 v) {
     v += gravity;
-    if (p.y > worldsize.y) {
+    if (p.y + v.y < -1.0) {
         v.y = 0.0;
     }
 }
