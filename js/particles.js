@@ -188,6 +188,7 @@ Particles.prototype.step = function() {
         .uniformi('velocity', 1)
         .uniformi('obstacles', 2)
         .uniform('scale', this.scale)
+        .uniform('random', Math.random() * 2.0 - 1.0)
         .uniform('gravity', this.gravity)
         .uniform('worldsize', this.worldsize)
         .uniformi('derivative', 0)
@@ -195,6 +196,7 @@ Particles.prototype.step = function() {
     this.framebuffers.step.attach(this.textures.v1);
     this.programs.update
         .uniformi('derivative', 1)
+        .uniform('random', Math.random() * 2.0 - 1.0)
         .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
     this.swap();
     return this;
