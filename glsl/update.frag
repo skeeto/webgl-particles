@@ -7,6 +7,7 @@ uniform sampler2D velocity;
 uniform int derivative;
 uniform float scale;
 uniform vec2 gravity;
+uniform vec2 worldsize;
 varying vec2 index;
 
 const float BASE = 255.0;

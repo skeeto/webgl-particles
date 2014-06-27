@@ -13,7 +13,7 @@ function Particles(canvas, nparticles) {
     this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 2);
     this.size = 10;
     this.color = new Float32Array([0.14, 0.62, 1, 1]);
-    this.gravity = new Float32Array([0, -0.10]);
+    this.gravity = new Float32Array([0, -0.05]);
 
     var indexes = new Float32Array(tw * th * 2);
     for (var y = 0; y < th; y++) {
@@ -80,8 +80,8 @@ Particles.prototype.fill = function() {
             var i = y * tw * 4 + x * 4,
                 px = Particles.encode(Math.random() * w, s),
                 py = Particles.encode(Math.random() * h, s),
-                vx = Particles.encode(0, s),
-                vy = Particles.encode(0, s);
+                vx = Particles.encode(Math.random() * 1.0 - 0.5, s),
+                vy = Particles.encode(Math.random() * 3.0, s);
             rgbaP[i + 0] = px[0];
             rgbaP[i + 1] = px[1];
             rgbaP[i + 2] = py[0];
@@ -140,6 +140,7 @@ Particles.prototype.step = function() {
         .uniformi('velocity', 1)
         .uniform('scale', this.scale)
         .uniform('gravity', this.gravity)
+        .uniform('worldsize', this.worldsize)
         .uniformi('derivative', 0)
         .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
     this.framebuffers.step.attach(this.textures.v1);
