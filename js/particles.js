@@ -30,9 +30,8 @@ function Particles(canvas, nparticles) {
     }
 
     this.programs = {
-        position: igloo.program('glsl/quad.vert', 'glsl/position.frag'),
-        velocity: igloo.program('glsl/quad.vert', 'glsl/velocity.frag'),
-        draw: igloo.program('glsl/draw.vert', 'glsl/draw.frag')
+        update: igloo.program('glsl/quad.vert', 'glsl/update.frag'),
+        draw:   igloo.program('glsl/draw.vert', 'glsl/draw.frag')
     };
     this.buffers = {
         quad: igloo.array(Igloo.QUAD2),
@@ -121,19 +120,17 @@ Particles.prototype.step = function() {
     this.textures.p0.bind(0);
     this.textures.v0.bind(1);
     gl.viewport(0, 0, this.statesize[0], this.statesize[1]);
-    this.programs.position.use()
-        .attrib('quad', this.buffers.quad, 2)
-        .uniformi('position', 0)
-        .uniformi('velocity', 1)
-        .uniform('scale', this.scale)
-        .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
-    this.framebuffers.step.attach(this.textures.v1);
-    this.programs.velocity.use()
+    this.programs.update.use()
         .attrib('quad', this.buffers.quad, 2)
         .uniformi('position', 0)
         .uniformi('velocity', 1)
         .uniform('scale', this.scale)
         .uniform('gravity', this.gravity)
+        .uniformi('derivative', 0)
+        .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
+    this.framebuffers.step.attach(this.textures.v1);
+    this.programs.update
+        .uniformi('derivative', 1)
         .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
     this.swap();
     return this;

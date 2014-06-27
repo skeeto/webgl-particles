@@ -4,6 +4,7 @@ precision mediump float;
 
 uniform sampler2D position;
 uniform sampler2D velocity;
+uniform int derivative;
 uniform float scale;
 uniform vec2 gravity;
 varying vec2 index;
@@ -19,8 +20,12 @@ vec2 encode(float value) {
     return vec2(x, y);
 }
 
-void go(inout vec2 p, inout vec2 v) {
-    v += gravity;
+void updatePosition(inout vec2 p, inout vec2 v) {
+    //p += v;
+}
+
+void updateVelocity(inout vec2 p, inout vec2 v) {
+    //v += gravity;
 }
 
 void main() {
@@ -28,6 +33,13 @@ void main() {
     vec4 vsample = texture2D(velocity, index);
     vec2 p = vec2(decode(psample.rg), decode(psample.ba));
     vec2 v = vec2(decode(vsample.rg), decode(vsample.ba));
-    //go(p, v);
-    gl_FragColor = vec4(encode(v.x), encode(v.y));
+    vec2 result;
+    if (derivative == 0) {
+        updatePosition(p, v);
+        result = p;
+    } else {
+        updateVelocity(p, v);
+        result = v;
+    }
+    gl_FragColor = vec4(encode(result.x), encode(result.y));
 }

@@ -13,13 +13,6 @@ float decode(vec2 channels) {
     return (channels[0] * 256.0 + channels[1] * 65536.0) / scale;
 }
 
-vec2 encode(float value) {
-    value * scale;
-    float x = mod(value, 256.0) / 256.0;
-    float y = value / 65536.0;
-    return vec2(x, y);
-}
-
 void main() {
     vec4 particle = texture2D(positions, index / statesize);
     vec2 p = vec2(decode(particle.rg), decode(particle.ba));
