@@ -13,7 +13,7 @@ function Particles(canvas, nparticles) {
     this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h));
     this.size = 10;
     this.color = new Float32Array([0.14, 0.62, 1, 1]);
-    this.gravity = new Float32Array([0, 0.10]);
+    this.gravity = new Float32Array([0, -0.10]);
 
     var indexes = new Float32Array(tw * th * 2);
     for (var y = 0; y < th; y++) {
@@ -51,7 +51,7 @@ function Particles(canvas, nparticles) {
     this.running = false;
 }
 
-Particles.BASE = 256;
+Particles.BASE = 255;
 
 Particles.encode = function(value, scale) {
     value *= scale;

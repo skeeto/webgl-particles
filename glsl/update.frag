@@ -9,25 +9,25 @@ uniform float scale;
 uniform vec2 gravity;
 varying vec2 index;
 
-const float BASE = 256.0;
+const float BASE = 255.0;
 
 float decode(vec2 channels) {
-    return (channels[0] * BASE + channels[1] * BASE * BASE) / scale;
+    return dot(channels, vec2(BASE, BASE * BASE) / scale);
 }
 
 vec2 encode(float value) {
     value *= scale;
-    float x = mod(value, BASE) / BASE;
-    float y = floor(value / BASE) / BASE;
-    return vec2(x, y);
+    float x = mod(value, BASE);
+    float y = floor(value / BASE);
+    return vec2(x, y) / BASE;
 }
 
 void updatePosition(inout vec2 p, inout vec2 v) {
-    //p += v;
+    p += v;
 }
 
 void updateVelocity(inout vec2 p, inout vec2 v) {
-    //v += gravity;
+    v += gravity;
 }
 
 void main() {
