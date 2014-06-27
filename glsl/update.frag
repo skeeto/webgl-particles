@@ -27,9 +27,9 @@ vec2 encode(float value) {
 
 void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
     p += v;
-    p.x = mod(p.x, worldsize.x);
-    if (p.y <= 0.0) {
+    if (p.y <= 0.0 || p.x < 0.0 || p.x > worldsize.x) {
         p.y += worldsize.y;
+        p.x = mod(p.x, worldsize.x);
     }
     if (length(obstacle) > 0.5) {
         p.x -= v.x * 2.0;
