@@ -9,14 +9,16 @@ uniform float scale;
 uniform vec2 gravity;
 varying vec2 index;
 
+const float BASE = 256.0;
+
 float decode(vec2 channels) {
-    return (channels[0] * 256.0 + channels[1] * 65536.0) / scale;
+    return (channels[0] * BASE + channels[1] * BASE * BASE) / scale;
 }
 
 vec2 encode(float value) {
     value *= scale;
-    float x = mod(value, 256.0) / 256.0;
-    float y = value / 65536.0;
+    float x = mod(value, BASE) / BASE;
+    float y = floor(value / BASE) / BASE;
     return vec2(x, y);
 }
 

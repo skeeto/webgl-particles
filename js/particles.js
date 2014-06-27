@@ -10,8 +10,8 @@ function Particles(canvas, nparticles) {
     gl.disable(gl.DEPTH_TEST);
     this.statesize = new Float32Array([tw, th]);
     this.worldsize = new Float32Array([w, h]);
-    this.scale = 65536 / Math.max(w, h);
-    this.size = 15;
+    this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h));
+    this.size = 10;
     this.color = new Float32Array([0.14, 0.62, 1, 1]);
     this.gravity = new Float32Array([0, 0.10]);
 
@@ -51,16 +51,20 @@ function Particles(canvas, nparticles) {
     this.running = false;
 }
 
+Particles.BASE = 256;
+
 Particles.encode = function(value, scale) {
+    value *= scale;
     var pair = [
-        Math.floor(value * scale % 256),
-        Math.floor(value * scale / 65536 * 256)
+        Math.floor((value % Particles.BASE) / Particles.BASE * 256),
+        Math.floor(Math.floor(value / Particles.BASE) / Particles.BASE * 256)
     ];
     return pair;
 };
 
 Particles.decode = function(pair, scale) {
-    return (pair[0] + pair[1] * 256) / scale;
+    return ((pair[0] / 256) * Particles.BASE +
+            (pair[1] / 256) * Particles.BASE * Particles.BASE) / scale;
 };
 
 Particles.prototype.fill = function() {
