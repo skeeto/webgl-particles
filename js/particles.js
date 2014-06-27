@@ -11,7 +11,7 @@ function Particles(canvas, nparticles) {
     this.statesize = new Float32Array([tw, th]);
     this.worldsize = new Float32Array([w, h]);
     this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 2);
-    this.size = 10;
+    this.size = 2;
     this.color = new Float32Array([0.14, 0.62, 1, 1]);
     this.gravity = new Float32Array([0, -0.05]);
 
@@ -81,7 +81,7 @@ Particles.prototype.fill = function() {
                 px = Particles.encode(Math.random() * w, s),
                 py = Particles.encode(Math.random() * h, s),
                 vx = Particles.encode(Math.random() * 1.0 - 0.5, s),
-                vy = Particles.encode(Math.random() * 3.0, s);
+                vy = Particles.encode(Math.random() * 10.0, s);
             rgbaP[i + 0] = px[0];
             rgbaP[i + 1] = px[1];
             rgbaP[i + 2] = py[0];
