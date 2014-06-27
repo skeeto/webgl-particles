@@ -11,9 +11,15 @@ function Particles(canvas, nparticles, size) {
     this.statesize = new Float32Array([tw, th]);
     this.worldsize = new Float32Array([w, h]);
     this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 3);
+
+    /* Drawing parameters. */
     this.size = size || 5;
     this.color = new Float32Array([0.14, 0.62, 1, 1]);
+
+    /* Simulation parameters. */
+    this.running = false;
     this.gravity = new Float32Array([0, -0.05]);
+    this.obstacles = [];
 
     var indexes = new Float32Array(tw * th * 2);
     for (var y = 0; y < th; y++) {
@@ -30,25 +36,30 @@ function Particles(canvas, nparticles, size) {
     }
 
     this.programs = {
-        update: igloo.program('glsl/quad.vert', 'glsl/update.frag'),
-        draw:   igloo.program('glsl/draw.vert', 'glsl/draw.frag')
+        update:  igloo.program('glsl/quad.vert', 'glsl/update.frag'),
+        draw:    igloo.program('glsl/draw.vert', 'glsl/draw.frag'),
+        flat:    igloo.program('glsl/quad.vert', 'glsl/flat.frag'),
+        ocircle: igloo.program('glsl/ocircle.vert', 'glsl/ocircle.frag')
     };
     this.buffers = {
         quad: igloo.array(Igloo.QUAD2),
-        indexes: igloo.array(indexes)
+        indexes: igloo.array(indexes),
+        point: igloo.array(new Float32Array([0, 0]))
     };
     this.textures = {
         p0: texture(),
         p1: texture(),
         v0: texture(),
-        v1: texture()
+        v1: texture(),
+        obstacles: igloo.texture().blank(w, h)
     };
     this.framebuffers = {
-        step: igloo.framebuffer()
+        step: igloo.framebuffer(),
+        obstacles: igloo.framebuffer().attach(this.textures.obstacles)
     };
 
     this.fill();
-    this.running = false;
+    this.addObstacle([w / 2, h / 2], 32);
 }
 
 Particles.BASE = 255;
@@ -126,6 +137,37 @@ Particles.prototype.swap = function() {
     return this;
 };
 
+Particles.prototype.updateObstacles = function() {
+    var gl = this.igloo.gl;
+    this.framebuffers.obstacles.bind();
+    gl.disable(gl.BLEND);
+    gl.viewport(0, 0, this.worldsize[0], this.worldsize[1]);
+    gl.clearColor(0.5, 0.5, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    for (var i = 0; i < this.obstacles.length; i++) {
+        var obstacle = this.obstacles[i];
+        obstacle.program.use()
+            .attrib('vert', obstacle.verts, 2)
+            .uniform('position', obstacle.position)
+            .uniform('size', obstacle.size)
+            .draw(obstacle.mode, obstacle.length);
+    }
+};
+
+Particles.prototype.addObstacle = function(center, radius) {
+    var igloo = this.igloo, gl = igloo.gl,
+        w = this.worldsize[0], h = this.worldsize[1],
+        position = [center[0] / w * 2 - 1, center[1] / h * 2 - 1];
+    this.obstacles.push({
+        program: this.programs.ocircle,
+        verts: this.buffers.point,
+        position: new Float32Array(position),
+        size: radius,
+        mode: gl.POINTS,
+        length: 1
+    });
+    this.updateObstacles();
+};
 
 Particles.prototype.step = function() {
     var igloo = this.igloo, gl = igloo.gl;
@@ -133,11 +175,13 @@ Particles.prototype.step = function() {
     this.framebuffers.step.attach(this.textures.p1);
     this.textures.p0.bind(0);
     this.textures.v0.bind(1);
+    this.textures.obstacles.bind(2);
     gl.viewport(0, 0, this.statesize[0], this.statesize[1]);
     this.programs.update.use()
         .attrib('quad', this.buffers.quad, 2)
         .uniformi('position', 0)
         .uniformi('velocity', 1)
+        .uniformi('obstacles', 2)
         .uniform('scale', this.scale)
         .uniform('gravity', this.gravity)
         .uniform('worldsize', this.worldsize)
@@ -156,11 +200,11 @@ Particles.prototype.draw = function() {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     igloo.defaultFramebuffer.bind();
+    gl.viewport(0, 0, this.worldsize[0], this.worldsize[1]);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     this.textures.p0.bind(0);
     this.textures.v0.bind(1);
-    gl.viewport(0, 0, this.worldsize[0], this.worldsize[1]);
     this.programs.draw.use()
         .attrib('index', this.buffers.indexes, 2)
         .uniformi('positions', 0)
@@ -171,6 +215,11 @@ Particles.prototype.draw = function() {
         .uniform('scale', this.scale)
         .uniform('color', this.color)
         .draw(gl.POINTS, this.statesize[0] * this.statesize[1]);
+    this.textures.obstacles.bind(2);
+    this.programs.flat.use()
+        .attrib('quad', this.buffers.quad, 2)
+        .uniformi('background', 2)
+        .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
     return this;
 };
 

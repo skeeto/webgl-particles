@@ -11,5 +11,5 @@ if (window.requestAnimationFrame == null) {
 var particles = null;
 $(document).ready(function() {
     var canvas = $('#display')[0];
-    particles = new Particles(canvas, 1024 * 16, 4).draw().start();
+    particles = new Particles(canvas, 1024 * 4, 3).draw().start();
 });
