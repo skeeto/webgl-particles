@@ -10,7 +10,7 @@ function Particles(canvas, nparticles) {
     gl.disable(gl.DEPTH_TEST);
     this.statesize = new Float32Array([tw, th]);
     this.worldsize = new Float32Array([w, h]);
-    this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h));
+    this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 2);
     this.size = 10;
     this.color = new Float32Array([0.14, 0.62, 1, 1]);
     this.gravity = new Float32Array([0, -0.10]);
@@ -54,36 +54,46 @@ function Particles(canvas, nparticles) {
 Particles.BASE = 255;
 
 Particles.encode = function(value, scale) {
-    value *= scale;
+    var b = Particles.BASE;
+    value = value * scale + b * b / 2;
     var pair = [
-        Math.floor((value % Particles.BASE) / Particles.BASE * 256),
-        Math.floor(Math.floor(value / Particles.BASE) / Particles.BASE * 256)
+        Math.floor((value % b) / b * 255),
+        Math.floor(Math.floor(value / b) / b * 255)
     ];
     return pair;
 };
 
 Particles.decode = function(pair, scale) {
-    return ((pair[0] / 256) * Particles.BASE +
-            (pair[1] / 256) * Particles.BASE * Particles.BASE) / scale;
+    var b = Particles.BASE;
+    return (((pair[0] / 255) * b +
+             (pair[1] / 255) * b * b) - b * b / 2) / scale;
 };
 
 Particles.prototype.fill = function() {
     var tw = this.statesize[0], th = this.statesize[1],
         w = this.worldsize[0], h = this.worldsize[1],
         s = this.scale,
-        rgba = new Uint8Array(tw * th * 4);
+        rgbaP = new Uint8Array(tw * th * 4),
+        rgbaV = new Uint8Array(tw * th * 4);
     for (var y = 0; y < th; y++) {
         for (var x = 0; x < tw; x++) {
             var i = y * tw * 4 + x * 4,
                 px = Particles.encode(Math.random() * w, s),
-                py = Particles.encode(Math.random() * h, s);
-            rgba[i + 0] = px[0];
-            rgba[i + 1] = px[1];
-            rgba[i + 2] = py[0];
-            rgba[i + 3] = py[1];
+                py = Particles.encode(Math.random() * h, s),
+                vx = Particles.encode(0, s),
+                vy = Particles.encode(0, s);
+            rgbaP[i + 0] = px[0];
+            rgbaP[i + 1] = px[1];
+            rgbaP[i + 2] = py[0];
+            rgbaP[i + 3] = py[1];
+            rgbaV[i + 0] = vx[0];
+            rgbaV[i + 1] = vx[1];
+            rgbaV[i + 2] = vy[0];
+            rgbaV[i + 3] = vy[1];
         }
     }
-    this.textures.p0.subset(rgba, 0, 0, tw, th);
+    this.textures.p0.subset(rgbaP, 0, 0, tw, th);
+    this.textures.v0.subset(rgbaV, 0, 0, tw, th);
     return this;
 };
 

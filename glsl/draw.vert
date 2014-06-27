@@ -9,8 +9,11 @@ uniform vec2 worldsize;
 uniform float size;
 uniform float scale;
 
+const float BASE = 255.0;
+const float OFFSET = BASE * BASE / 2.0;
+
 float decode(vec2 channels) {
-    return (channels[0] * 256.0 + channels[1] * 65536.0) / scale;
+    return (dot(channels, vec2(BASE, BASE * BASE)) - OFFSET) / scale;
 }
 
 void main() {
