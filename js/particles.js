@@ -159,10 +159,12 @@ Particles.prototype.draw = function() {
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     this.textures.p0.bind(0);
+    this.textures.v0.bind(1);
     gl.viewport(0, 0, this.worldsize[0], this.worldsize[1]);
     this.programs.draw.use()
         .attrib('index', this.buffers.indexes, 2)
         .uniformi('positions', 0)
+        .uniformi('velocities', 1)
         .uniform('statesize', this.statesize)
         .uniform('worldsize', this.worldsize)
         .uniform('size', this.size)
