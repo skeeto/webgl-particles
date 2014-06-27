@@ -8,8 +8,10 @@ if (window.requestAnimationFrame == null) {
         };
 }
 
-var particles = null;
+var particles = null,
+    controller = null;
 $(document).ready(function() {
     var canvas = $('#display')[0];
     particles = new Particles(canvas, 1024 * 4, 3).draw().start();
+    controller = new Controller(particles);
 });

@@ -146,27 +146,32 @@ Particles.prototype.updateObstacles = function() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     for (var i = 0; i < this.obstacles.length; i++) {
         var obstacle = this.obstacles[i];
-        obstacle.program.use()
-            .attrib('vert', obstacle.verts, 2)
-            .uniform('position', obstacle.position)
-            .uniform('size', obstacle.size)
-            .draw(obstacle.mode, obstacle.length);
+        if (obstacle.enabled) {
+            obstacle.program.use()
+                .attrib('vert', obstacle.verts, 2)
+                .uniform('position', new Float32Array(obstacle.position))
+                .uniform('worldsize', this.worldsize)
+                .uniform('size', obstacle.size)
+                .draw(obstacle.mode, obstacle.length);
+        }
     }
 };
 
 Particles.prototype.addObstacle = function(center, radius) {
     var igloo = this.igloo, gl = igloo.gl,
-        w = this.worldsize[0], h = this.worldsize[1],
-        position = [center[0] / w * 2 - 1, center[1] / h * 2 - 1];
-    this.obstacles.push({
+        w = this.worldsize[0], h = this.worldsize[1];
+    var obstacle = {
+        enabled: true,
         program: this.programs.ocircle,
         verts: this.buffers.point,
-        position: new Float32Array(position),
+        position: center,
         size: radius,
         mode: gl.POINTS,
         length: 1
-    });
+    };
+    this.obstacles.push(obstacle);
     this.updateObstacles();
+    return obstacle;
 };
 
 Particles.prototype.step = function() {

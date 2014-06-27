@@ -8,4 +8,17 @@ body {
 canvas {
     border: 1px solid gray;
     display: inline-block;
+    cursor: none;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.description {
+    width: 400px;
+    margin: auto;
+    text-align: justify;
+    font-size: 14px;
 }
