@@ -12,13 +12,19 @@
   </head>
   <body>
     <h1>WebGL Particle Physics</h1>
-    <canvas id="display" width="400" height="600"></canvas>
-    <p class="description">
-      The particle simulation and physics is running entirely on your
-      GPU. Particle state is stored in a series of texture objects,
-      updated by off-screen draws. Obstables, like your mouse, are
-      represented by a texture of surface normals, allowing particles
-      to bounce.
-    </p>
+    <canvas id="display" width="800" height="600"></canvas>
+    <div class="description">
+      <p>
+        The particle simulation and physics is running entirely on your
+        GPU. Particle state is stored in a series of texture objects,
+        updated by off-screen draws. Obstables, like your mouse, are
+        represented by a texture of surface normals, allowing particles
+        to bounce.
+      </p>
+      <p>
+        Click will place a new obstacle and middle clicking will clear
+        all obstables from the simulation.
+      </p>
+    </div>
   </body>
 </html>
