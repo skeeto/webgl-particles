@@ -111,6 +111,43 @@ Controller.prototype.adjust = function(factor) {
 };
 
 /**
+ * Captures the simulation's particle count and obstacle configuration.
+ * @returns {Object} the simulation save state object
+ */
+Controller.prototype.save = function() {
+    var save = {
+        particles: this.particles.getCount(),
+        obstacles: []
+    };
+    this.particles.obstacles.forEach(function(o) {
+        if (o.enabled) {
+            save.obstacles.push({
+                position: Controller.round(o.position),
+                size: o.size
+            });
+        }
+    });
+    return save;
+};
+
+/**
+ * Restore the simulation's state from a save object.
+ * @param {Object} save
+ * @returns {Controller} this
+ */
+Controller.prototype.restore = function(save) {
+    if (this.particles.getCount() !== save.particles) {
+        this.particles.setCount(save.particles);
+    }
+    this.clear();
+    var ps = this.particles;
+    save.obstacles.forEach(function(o) {
+        ps.addObstacle(o.position, o.size);
+    });
+    return this;
+};
+
+/**
  * @param {Object} event
  * @returns {Array} the simulation coodinates from the event
  */
@@ -121,4 +158,20 @@ Controller.coords = function(event) {
         x = event.pageX - offset.left - border,
         y = $target.height() - (event.pageY - offset.top - border);
     return [x, y];
+};
+
+/**
+ * @param {Array|ArrayBufferView|value} value
+ * @param {number} [precision=4]
+ * @returns {Array|number} a copy of the array/value rounded to PRECISION
+ */
+Controller.round = function(value, precision) {
+    precision = precision || 4;
+    if ('length' in value) {
+        return Array.prototype.map.call(value, function (x) {
+            return Number(x.toPrecision(precision));
+        });
+    } else {
+        return Number(value.toPrecision(precision));
+    }
 };
