@@ -65,6 +65,12 @@ function Controller(particles) {
     $('.controls .clear').on('click', function() {
         _this.clear();
     });
+    $('.controls .save').on('click', function() {
+        localStorage.obstacles = JSON.stringify(_this.save());
+    });
+    $('.controls .restore').on('click', function() {
+        _this.restore(JSON.parse(localStorage.obstacles));
+    });
 }
 
 /**
