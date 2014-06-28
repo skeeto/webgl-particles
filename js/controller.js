@@ -41,14 +41,21 @@ function Controller(particles) {
             _this.clear();
             break;
         case 68: // d
-            this.particles.setCount(this.particles.getCount() * 2);
-            updateCount();
+            _this.adjust(2);
             break;
         case 72: // h
-            this.particles.setCount(this.particles.getCount() / 2);
-            updateCount();
+            _this.adjust(0.5);
             break;
         }
+    });
+    $('.controls .increase').on('click', function() {
+        _this.adjust(2);
+    });
+    $('.controls .decrease').on('click', function() {
+        _this.adjust(0.5);
+    });
+    $('.controls .clear').on('click', function() {
+        _this.clear();
     });
 }
 
@@ -61,6 +68,11 @@ Controller.prototype.init = function() {
 Controller.prototype.clear = function() {
     this.particles.obstacles.length = 0;
     this.init();
+};
+
+Controller.prototype.adjust = function(factor) {
+    this.particles.setCount(this.particles.getCount() * factor);
+    updateCount();
 };
 
 Controller.coords = function(event) {
