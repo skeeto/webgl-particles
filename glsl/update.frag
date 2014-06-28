@@ -14,6 +14,7 @@ varying vec2 index;
 
 const float BASE = 255.0;
 const float OFFSET = BASE * BASE / 2.0;
+const float RESTITUTION = 0.25;
 
 float decode(vec2 channels) {
     return (dot(channels, vec2(BASE, BASE * BASE)) - OFFSET) / scale;
@@ -33,13 +34,8 @@ void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
         p.x = mod(p.x + random * 10.0, worldsize.x);
     }
     if (length(obstacle) > 0.5) {
-        if (length(v) < 0.5) {
-            p.y += worldsize.y; // dislodge
-            p.x += random;
-        } else {
-            p.x -= v.x * 2.0;
-            p.y -= v.y * 2.0;
-        }
+        p -= v;        // back out velocity change
+        p += obstacle; // push out out obstacle
     }
 }
 
@@ -50,7 +46,11 @@ void updateVelocity(inout vec2 p, inout vec2 v, vec2 obstacle) {
         v.y = 0.0;
     }
     if (length(obstacle) > 0.5) {
-        v = reflect(v, obstacle) * 0.20;
+        if (length(v) < 0.5) {
+            v = obstacle * 0.5;
+        } else {
+            v = reflect(v, obstacle) * RESTITUTION;
+        }
     }
 }
 
