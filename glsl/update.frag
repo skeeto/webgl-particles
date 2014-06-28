@@ -30,6 +30,7 @@ vec2 encode(float value) {
 void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
     p += v;
     if (p.y <= 0.0 || p.x < 0.0 || p.x > worldsize.x) {
+        /* Left the world, reset particle. */
         p.y += worldsize.y + random + (index.y - 0.5);
         p.x = mod(p.x + random * 10.0, worldsize.x);
     }
@@ -42,14 +43,15 @@ void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
 void updateVelocity(inout vec2 p, inout vec2 v, vec2 obstacle) {
     v += gravity;
     if (p.y + v.y < -1.0) {
+        /* Left the world, reset particle. */
         v.x = v.x + random / 2.0 + (index.x - 0.5);
         v.y = 0.0;
     }
     if (length(obstacle) > 0.5) {
         if (length(v) < 0.5) {
-            v = obstacle * 0.5;
+            v = obstacle * 0.5; // velocity too low, jiggle outward
         } else {
-            v = reflect(v, obstacle) * RESTITUTION;
+            v = reflect(v, obstacle) * RESTITUTION; // bounce
         }
     }
 }
