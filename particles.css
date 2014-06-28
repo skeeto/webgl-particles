@@ -22,3 +22,7 @@ h1 {
     text-align: justify;
     font-size: 14px;
 }
+
+.count {
+    font-weight: bold;
+}

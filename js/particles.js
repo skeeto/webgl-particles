@@ -4,11 +4,8 @@ function Particles(canvas, nparticles, size) {
     var igloo = this.igloo = new Igloo(canvas),
         gl = igloo.gl,
         maxTexture = gl.getParameter(gl.MAX_TEXTURE_SIZE),
-        tw = Math.ceil(Math.sqrt(nparticles)),
-        th = Math.floor(Math.sqrt(nparticles)),
         w = canvas.width, h = canvas.height;
     gl.disable(gl.DEPTH_TEST);
-    this.statesize = new Float32Array([tw, th]);
     this.worldsize = new Float32Array([w, h]);
     this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 3);
 
@@ -21,18 +18,8 @@ function Particles(canvas, nparticles, size) {
     this.gravity = new Float32Array([0, -0.05]);
     this.obstacles = [];
 
-    var indexes = new Float32Array(tw * th * 2);
-    for (var y = 0; y < th; y++) {
-        for (var x = 0; x < tw; x++) {
-            var i = y * tw * 2 + x * 2;
-            indexes[i + 0] = x;
-            indexes[i + 1] = y;
-        }
-    }
-
     function texture() {
-        return igloo.texture(null, gl.RGBA, gl.CLAMP_TO_EDGE, gl.NEAREST)
-            .blank(tw, th);
+        return igloo.texture(null, gl.RGBA, gl.CLAMP_TO_EDGE, gl.NEAREST);
     }
 
     this.programs = {
@@ -43,7 +30,7 @@ function Particles(canvas, nparticles, size) {
     };
     this.buffers = {
         quad: igloo.array(Igloo.QUAD2),
-        indexes: igloo.array(indexes),
+        indexes: igloo.array(),
         point: igloo.array(new Float32Array([0, 0]))
     };
     this.textures = {
@@ -58,7 +45,7 @@ function Particles(canvas, nparticles, size) {
         obstacles: igloo.framebuffer().attach(this.textures.obstacles)
     };
 
-    this.fill();
+    this.setCount(nparticles, true);
     this.addObstacle([w / 2, h / 2], 32);
 }
 
@@ -80,7 +67,7 @@ Particles.decode = function(pair, scale) {
              (pair[1] / 255) * b * b) - b * b / 2) / scale;
 };
 
-Particles.prototype.fill = function() {
+Particles.prototype.initTextures = function() {
     var tw = this.statesize[0], th = this.statesize[1],
         w = this.worldsize[0], h = this.worldsize[1],
         s = this.scale,
@@ -103,9 +90,38 @@ Particles.prototype.fill = function() {
             rgbaV[i + 3] = vy[1];
         }
     }
-    this.textures.p0.subset(rgbaP, 0, 0, tw, th);
-    this.textures.v0.subset(rgbaV, 0, 0, tw, th);
+    this.textures.p0.set(rgbaP, tw, th);
+    this.textures.v0.set(rgbaV, tw, th);
+    this.textures.p1.blank(tw, th);
+    this.textures.v1.blank(tw, th);
     return this;
+};
+
+Particles.prototype.initBuffers = function() {
+    var tw = this.statesize[0], th = this.statesize[1],
+        gl = this.igloo.gl,
+        indexes = new Float32Array(tw * th * 2);
+    for (var y = 0; y < th; y++) {
+        for (var x = 0; x < tw; x++) {
+            var i = y * tw * 2 + x * 2;
+            indexes[i + 0] = x;
+            indexes[i + 1] = y;
+        }
+    }
+    this.buffers.indexes.update(indexes, gl.STATIC_DRAW);
+    return this;
+};
+
+Particles.prototype.setCount = function(n) {
+    var tw = Math.ceil(Math.sqrt(n)),
+        th = Math.floor(Math.sqrt(n));
+    this.statesize = new Float32Array([tw, th]);
+    this.initTextures();
+    this.initBuffers();
+};
+
+Particles.prototype.getCount = function() {
+    return this.statesize[0] * this.statesize[1];
 };
 
 Particles.prototype.get = function() {

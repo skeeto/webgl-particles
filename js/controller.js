@@ -1,3 +1,5 @@
+/*global updateCount x*/
+
 function Controller(particles) {
     this.particles = particles;
     this.obstacle = null;
@@ -26,12 +28,27 @@ function Controller(particles) {
     });
     $(canvas).on('mousedown', function(event) {
         if (event.which === 2) {
-            particles.obstacles.length = 0;
-            _this.init();
+            _this.clear();
             event.preventDefault();
             return false;
+        } else {
+            return true;
         }
-        return true;
+    });
+    $(window).on('keyup', function(event) {
+        switch (event.which) {
+        case 67: // c
+            _this.clear();
+            break;
+        case 68: // d
+            this.particles.setCount(this.particles.getCount() * 2);
+            updateCount();
+            break;
+        case 72: // h
+            this.particles.setCount(this.particles.getCount() / 2);
+            updateCount();
+            break;
+        }
     });
 }
 
@@ -39,6 +56,11 @@ Controller.prototype.init = function() {
     this.obstacle = this.particles.addObstacle([0, 0], 20);
     this.obstacle.enabled = false;
     this.particles.updateObstacles();
+};
+
+Controller.prototype.clear = function() {
+    this.particles.obstacles.length = 0;
+    this.init();
 };
 
 Controller.coords = function(event) {
