@@ -51,6 +51,10 @@ function Controller(particles) {
     $('.controls .decrease').on('click', function() {
         _this.adjust(0.5);
     });
+    $('.controls .particles .color').on('change', function(event) {
+        var value = $(event.target).val();
+        _this.particles.color = Controller.parseColor(value);
+    });
     $('.controls .reset').on('click', function() {
         _this.adjust(1);
     });
@@ -61,6 +65,10 @@ function Controller(particles) {
     $('.controls .smaller').on('click', function() {
         _this.obstacle.size *= 0.67;
         _this.particles.updateObstacles();
+    });
+    $('.controls .obstacles .color').on('change', function(event) {
+        var value = $(event.target).val();
+        _this.particles.obstacleColor = Controller.parseColor(value);
     });
     $('.controls .clear').on('click', function() {
         _this.clear();
@@ -180,4 +188,16 @@ Controller.round = function(value, precision) {
     } else {
         return Number(value.toPrecision(precision));
     }
+};
+
+/**
+ * @param {string} color
+ * @returns {Array} a 4-element color array
+ */
+Controller.parseColor = function(color) {
+    var colors = /#(..)(..)(..)/.exec(color).slice(1).map(function(x) {
+        return parseInt(x, 16) / 255;
+    });
+    colors.push(1);
+    return colors;
 };
