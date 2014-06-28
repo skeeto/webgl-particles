@@ -8,6 +8,7 @@ function Particles(canvas, nparticles, size) {
     gl.disable(gl.DEPTH_TEST);
     this.worldsize = new Float32Array([w, h]);
     this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 3);
+    this.listeners = [];
 
     /* Drawing parameters. */
     this.size = size || 5;
@@ -250,6 +251,9 @@ Particles.prototype.frame = function() {
     window.requestAnimationFrame(function() {
         if (this.running) {
             this.step().draw().frame();
+            for (var i = 0; i < this.listeners.length; i++) {
+                this.listeners[i]();
+            }
         }
     }.bind(this));
     return this;

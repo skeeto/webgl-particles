@@ -23,6 +23,6 @@ h1 {
     font-size: 14px;
 }
 
-.count {
+.count, .fps {
     font-weight: bold;
 }
