@@ -18,7 +18,7 @@ function Particles(canvas, nparticles, size) {
 
     /* Drawing parameters. */
     this.size = size || 5;
-    this.color = [0.14, 0.62, 1, 1];
+    this.color = [0.14, 0.62, 1, 0.6];
     this.obstacleColor = [0.45, 0.35, 0.25, 1.0];
 
     /* Simulation parameters. */
