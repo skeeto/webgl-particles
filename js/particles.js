@@ -314,6 +314,7 @@ Particles.prototype.draw = function() {
         .attrib('quad', this.buffers.quad, 2)
         .uniformi('background', 2)
         .uniform('color', this.obstacleColor)
+        .uniform('worldsize', this.worldsize)
         .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
     return this;
 };
