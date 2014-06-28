@@ -1,3 +1,7 @@
+/**
+ * A very crude FPS counter.
+ * @constructor
+ */
 function FPS(thing) {
     var lasttime = Date.now(),
         count = 0,

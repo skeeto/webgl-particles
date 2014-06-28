@@ -1,5 +1,9 @@
 /*global updateCount x*/
 
+/**
+ * User interface connection to the simulation.
+ * @constructor
+ */
 function Controller(particles) {
     this.particles = particles;
     this.obstacle = null;
@@ -59,22 +63,41 @@ function Controller(particles) {
     });
 }
 
+/**
+ * Create and capture the mouse obstacle.
+ * @returns {Controller} this
+ */
 Controller.prototype.init = function() {
     this.obstacle = this.particles.addObstacle([0, 0], 20);
     this.obstacle.enabled = false;
     this.particles.updateObstacles();
+    return this;
 };
 
+/**
+ * Clear all obstacles.
+ * @returns {Controller} this
+ */
 Controller.prototype.clear = function() {
     this.particles.obstacles.length = 0;
     this.init();
+    return this;
 };
 
+/**
+ * Immediately adjust the particle count.
+ * @param {number} factor multiplies the particle count
+ * @returns {Controller} this
+ */
 Controller.prototype.adjust = function(factor) {
     this.particles.setCount(this.particles.getCount() * factor);
     updateCount();
 };
 
+/**
+ * @param {Object} event
+ * @returns {Array} the simulation coodinates from the event
+ */
 Controller.coords = function(event) {
     var $target = $(event.target),
         offset = $target.offset(),
