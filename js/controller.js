@@ -8,6 +8,7 @@ function Controller(particles) {
     this.particles = particles;
     this.obstacle = null;
     this.init();
+    this.mousedown = false;
 
     var _this = this,
         canvas = particles.igloo.gl.canvas;
@@ -17,17 +18,20 @@ function Controller(particles) {
         _this.obstacle.position[1] = coords[1];
         _this.obstacle.enabled = true;
         particles.updateObstacles();
+        if (_this.mousedown) _this.place();
     });
     $(canvas).on('mouseout', function() {
         _this.obstacle.enabled = false;
         particles.updateObstacles();
+        _this.mousedown = false;
+    });
+    $(canvas).on('mousedown', function() {
+        _this.mousedown = true;
     });
     $(canvas).on('mouseup', function(event) {
         if (event.which === 1) {
-            var center = _this.obstacle.position,
-            radius = _this.obstacle.size;
-            particles.addObstacle(center.slice(0), radius);
-            particles.updateObstacles();
+            _this.place();
+            _this.mousedown = false;
         }
     });
     $(canvas).on('mousedown', function(event) {
@@ -70,6 +74,18 @@ function Controller(particles) {
 Controller.prototype.init = function() {
     this.obstacle = this.particles.addObstacle([0, 0], 20);
     this.obstacle.enabled = false;
+    this.particles.updateObstacles();
+    return this;
+};
+
+/**
+ * Place a new obstacle at the mouse location.
+ * @returns {Controller} this
+ */
+Controller.prototype.place = function() {
+    var center = this.obstacle.position,
+        radius = this.obstacle.size;
+    this.particles.addObstacle(center.slice(0), radius);
     this.particles.updateObstacles();
     return this;
 };
