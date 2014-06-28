@@ -29,19 +29,8 @@ function Controller(particles) {
         _this.mousedown = true;
     });
     $(canvas).on('mouseup', function(event) {
-        if (event.which === 1) {
-            _this.place();
-            _this.mousedown = false;
-        }
-    });
-    $(canvas).on('mousedown', function(event) {
-        if (event.which === 2) {
-            _this.clear();
-            event.preventDefault();
-            return false;
-        } else {
-            return true;
-        }
+        if (event.which === 1) _this.place();
+        _this.mousedown = false;
     });
     $(window).on('keyup', function(event) {
         switch (event.which) {
