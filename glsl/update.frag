@@ -35,6 +35,7 @@ void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
     if (length(obstacle) > 0.5) {
         if (length(v) < 0.5) {
             p.y += worldsize.y; // dislodge
+            p.x += random;
         } else {
             p.x -= v.x * 2.0;
             p.y -= v.y * 2.0;
@@ -45,7 +46,7 @@ void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
 void updateVelocity(inout vec2 p, inout vec2 v, vec2 obstacle) {
     v += gravity;
     if (p.y + v.y < -1.0) {
-        v.x = v.x * 0.9 + random / 100.0;
+        v.x = v.x + random;
         v.y = 0.0;
     }
     if (length(obstacle) > 0.5) {
