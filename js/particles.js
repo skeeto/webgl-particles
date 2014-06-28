@@ -1,5 +1,11 @@
 /*global Igloo */
 
+/**
+ * @param {HTMLCanvasElement} canvas
+ * @param {number} nparticles initial particle count
+ * @param {size} [size=5] particle size in pixels
+ * @constructor
+ */
 function Particles(canvas, nparticles, size) {
     var igloo = this.igloo = new Igloo(canvas),
         gl = igloo.gl,
@@ -50,8 +56,18 @@ function Particles(canvas, nparticles, size) {
     this.addObstacle([w / 2, h / 2], 32);
 }
 
+/**
+ * Encoding base.
+ * @type {number}
+ * @const
+ */
 Particles.BASE = 255;
 
+/**
+ * @param {number} value
+ * @param {number} scale to maximize use of dynamic range
+ * @returns {Array} the 2-byte encoding of VALUE
+ */
 Particles.encode = function(value, scale) {
     var b = Particles.BASE;
     value = value * scale + b * b / 2;
@@ -62,12 +78,21 @@ Particles.encode = function(value, scale) {
     return pair;
 };
 
+/**
+ * @param {Array} pair
+ * @param {number} scale to maximize use of dynamic range
+ * @returns {number} the value for the encoded PAIR
+ */
 Particles.decode = function(pair, scale) {
     var b = Particles.BASE;
     return (((pair[0] / 255) * b +
              (pair[1] / 255) * b * b) - b * b / 2) / scale;
 };
 
+/**
+ * Allocates textures and fills them with initial random state.
+ * @returns {Particles} this
+ */
 Particles.prototype.initTextures = function() {
     var tw = this.statesize[0], th = this.statesize[1],
         w = this.worldsize[0], h = this.worldsize[1],
@@ -98,6 +123,10 @@ Particles.prototype.initTextures = function() {
     return this;
 };
 
+/**
+ * Allocate array buffers and fill with needed values.
+ * @returns {Particles} this
+ */
 Particles.prototype.initBuffers = function() {
     var tw = this.statesize[0], th = this.statesize[1],
         gl = this.igloo.gl,
@@ -113,18 +142,31 @@ Particles.prototype.initBuffers = function() {
     return this;
 };
 
+/**
+ * Set a new particle count. This is a minimum and the actual count
+ * may be slightly higher to fill out a texture.
+ * @param {number} n
+ * @returns {Particles} this
+ */
 Particles.prototype.setCount = function(n) {
     var tw = Math.ceil(Math.sqrt(n)),
         th = Math.floor(Math.sqrt(n));
     this.statesize = new Float32Array([tw, th]);
     this.initTextures();
     this.initBuffers();
+    return this;
 };
 
+/**
+ * @returns {number} the actual particle count
+ */
 Particles.prototype.getCount = function() {
     return this.statesize[0] * this.statesize[1];
 };
 
+/**
+ * @returns {Array} list of all particle positions
+ */
 Particles.prototype.get = function() {
     var gl = this.igloo.gl;
     this.framebuffers.step.attach(this.textures.p0);
@@ -144,6 +186,10 @@ Particles.prototype.get = function() {
     return particles;
 };
 
+/**
+ * Swap the foreground and background state.
+ * @returns {Particles} this
+ */
 Particles.prototype.swap = function() {
     var tmp = this.textures.p0;
     this.textures.p0 = this.textures.p1;
@@ -154,6 +200,10 @@ Particles.prototype.swap = function() {
     return this;
 };
 
+/**
+ * Brings the obstacles texture up to date.
+ * @returns {Particles} this
+ */
 Particles.prototype.updateObstacles = function() {
     var gl = this.igloo.gl;
     this.framebuffers.obstacles.bind();
@@ -172,8 +222,17 @@ Particles.prototype.updateObstacles = function() {
                 .draw(obstacle.mode, obstacle.length);
         }
     }
+    return this;
 };
 
+/**
+ * Introduces a new circle obstacle to the simulation. You can
+ * continue to update the obstacle position, radius, etc. so long as
+ * you call updateObstacles() afterwards.
+ * @param {Array} center
+ * @param {number} radius
+ * @returns {Object} the obstacle object
+ */
 Particles.prototype.addObstacle = function(center, radius) {
     var igloo = this.igloo, gl = igloo.gl,
         w = this.worldsize[0], h = this.worldsize[1];
@@ -191,6 +250,10 @@ Particles.prototype.addObstacle = function(center, radius) {
     return obstacle;
 };
 
+/**
+ * Step the simulation forward by one iteration.
+ * @returns {Particles} this
+ */
 Particles.prototype.step = function() {
     var igloo = this.igloo, gl = igloo.gl;
     gl.disable(gl.BLEND);
@@ -219,6 +282,10 @@ Particles.prototype.step = function() {
     return this;
 };
 
+/**
+ * Draw the current simulation state to the display.
+ * @returns {Particles} this
+ */
 Particles.prototype.draw = function() {
     var igloo = this.igloo, gl = igloo.gl;
     gl.enable(gl.BLEND);
@@ -247,6 +314,10 @@ Particles.prototype.draw = function() {
     return this;
 };
 
+/**
+ * Register with requestAnimationFrame to step and draw a frame.
+ * @returns {Particles} this
+ */
 Particles.prototype.frame = function() {
     window.requestAnimationFrame(function() {
         if (this.running) {
@@ -259,6 +330,10 @@ Particles.prototype.frame = function() {
     return this;
 };
 
+/**
+ * Start animating the simulation if it isn't already.
+ * @returns {Particles} this
+ */
 Particles.prototype.start = function() {
     if (!this.running) {
         this.running = true;
@@ -267,6 +342,10 @@ Particles.prototype.start = function() {
     return this;
 };
 
+/**
+ * Immediately stop the animation.
+ * @returns {Particles} this
+ */
 Particles.prototype.stop = function() {
     this.running = false;
     return this;
