@@ -78,6 +78,7 @@ function Controller(particles) {
     });
     $('.controls .restore').on('click', function() {
         _this.restore(JSON.parse(localStorage.obstacles));
+        updateCount();
     });
 }
 
