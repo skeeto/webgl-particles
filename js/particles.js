@@ -24,6 +24,7 @@ function Particles(canvas, nparticles, size) {
     /* Simulation parameters. */
     this.running = false;
     this.gravity = new Float32Array([0, -0.05]);
+    this.restitution = 0.25;
     this.obstacles = [];
 
     function texture() {
@@ -271,6 +272,7 @@ Particles.prototype.step = function() {
         .uniform('scale', this.scale)
         .uniform('random', Math.random() * 2.0 - 1.0)
         .uniform('gravity', this.gravity)
+        .uniform('restitution', this.restitution)
         .uniform('worldsize', this.worldsize)
         .uniformi('derivative', 0)
         .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);

@@ -9,12 +9,12 @@ uniform int derivative;
 uniform float scale;
 uniform float random;
 uniform vec2 gravity;
+uniform float restitution;
 uniform vec2 worldsize;
 varying vec2 index;
 
 const float BASE = 255.0;
 const float OFFSET = BASE * BASE / 2.0;
-const float RESTITUTION = 0.25;
 
 float decode(vec2 channels) {
     return (dot(channels, vec2(BASE, BASE * BASE)) - OFFSET) / scale;
@@ -51,7 +51,7 @@ void updateVelocity(inout vec2 p, inout vec2 v, vec2 obstacle) {
         if (length(v) < 0.5) {
             v = obstacle * 0.5; // velocity too low, jiggle outward
         } else {
-            v = reflect(v, obstacle) * RESTITUTION; // bounce
+            v = reflect(v, obstacle) * restitution; // bounce
         }
     }
 }
