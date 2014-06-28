@@ -18,7 +18,8 @@ function Particles(canvas, nparticles, size) {
 
     /* Drawing parameters. */
     this.size = size || 5;
-    this.color = new Float32Array([0.14, 0.62, 1, 1]);
+    this.color = [0.14, 0.62, 1, 1];
+    this.obstacleColor = [0.45, 0.35, 0.25, 1.0];
 
     /* Simulation parameters. */
     this.running = false;
@@ -310,6 +311,7 @@ Particles.prototype.draw = function() {
     this.programs.flat.use()
         .attrib('quad', this.buffers.quad, 2)
         .uniformi('background', 2)
+        .uniform('color', this.obstacleColor)
         .draw(gl.TRIANGLE_STRIP, Igloo.QUAD2.length / 2);
     return this;
 };
