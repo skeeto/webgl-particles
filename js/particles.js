@@ -9,12 +9,19 @@
 function Particles(canvas, nparticles, size) {
     var igloo = this.igloo = new Igloo(canvas),
         gl = igloo.gl,
-        maxTexture = gl.getParameter(gl.MAX_TEXTURE_SIZE),
         w = canvas.width, h = canvas.height;
     gl.disable(gl.DEPTH_TEST);
     this.worldsize = new Float32Array([w, h]);
     this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 3);
     this.listeners = [];
+
+    /* Vertex shader texture access not guaranteed on OpenGL ES 2.0. */
+    if (gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS) === 0) {
+        var msg = 'Vertex shader texture access not available.' +
+                'Try again on another platform.';
+        alert(msg);
+        throw new Error(msg);
+    }
 
     /* Drawing parameters. */
     this.size = size || 5;
