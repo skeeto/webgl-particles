@@ -15,9 +15,18 @@
     <h1>WebGL Particle Physics</h1>
     <canvas id="display" width="800" height="600"></canvas>
     <div class="controls">
-      <button class="increase">More particles</button>
-      <button class="decrease">Fewer particles</button>
-      <button class="clear">Clear obstacles</button>
+      <div class="particles">
+        <label>Particles:</label>
+        <button class="increase">More</button>
+        <button class="decrease">Fewer</button>
+        <button class="reset">Reset</button>
+      </div>
+      <div class="obstacles">
+        <label>Obstacles:</label>
+        <button class="bigger">Bigger</button>
+        <button class="smaller">Smaller</button>
+        <button class="clear">Clear</button>
+      </div>
     </div>
     <div class="description">
       <p>
@@ -33,7 +42,7 @@
       </p>
       <p>
         Clicking will place a new obstacle and middle clicking will
-        clear all obstables from the simulation.
+        clear all obstacles from the simulation.
       </p>
     </div>
   </body>

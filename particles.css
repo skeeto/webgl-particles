@@ -26,3 +26,20 @@ h1 {
 .count, .fps {
     font-weight: bold;
 }
+
+.controls {
+    text-align: left;
+    width: 450px;
+    margin: auto;
+}
+
+.controls button {
+    width: 100px;
+}
+
+.controls label {
+    display: inline-block;
+    width: 90px;
+    color: pink;
+    font-weight: bold;
+}

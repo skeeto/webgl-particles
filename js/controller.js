@@ -62,6 +62,17 @@ function Controller(particles) {
     $('.controls .decrease').on('click', function() {
         _this.adjust(0.5);
     });
+    $('.controls .reset').on('click', function() {
+        _this.adjust(1);
+    });
+    $('.controls .bigger').on('click', function() {
+        _this.obstacle.size *= 1.5;
+        _this.particles.updateObstacles();
+    });
+    $('.controls .smaller').on('click', function() {
+        _this.obstacle.size *= 0.67;
+        _this.particles.updateObstacles();
+    });
     $('.controls .clear').on('click', function() {
         _this.clear();
     });
