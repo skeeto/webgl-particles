@@ -58,3 +58,7 @@ h1 {
     color: pink;
     font-weight: bold;
 }
+
+a:link, a:visited {
+    color: pink;
+}
