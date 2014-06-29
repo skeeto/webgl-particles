@@ -67,6 +67,9 @@ function Controller(particles) {
     $('.controls .particles .wind').on('input', function() {
         _this.particles.wind[0] = Number($(this).val());
     });
+    $('.controls .particles .restitution').on('input', function() {
+        _this.particles.restitution = Number($(this).val());
+    });
     $('.controls .obstacles .color').on('change', function(event) {
         var value = $(event.target).val();
         _this.particles.obstacleColor = Controller.parseColor(value);
