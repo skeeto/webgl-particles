@@ -31,7 +31,7 @@ void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
     p += v;
     if (p.y <= 0.0 || p.x < 0.0 || p.x > worldsize.x) {
         /* Left the world, reset particle. */
-        p.y += worldsize.y + random + (index.y - 0.5);
+        p.y += worldsize.y + random + (index.y - 0.5) * sign(random);
         p.x = mod(p.x + random * 10.0, worldsize.x);
     }
     if (length(obstacle) > 0.5) {
@@ -44,7 +44,7 @@ void updateVelocity(inout vec2 p, inout vec2 v, vec2 obstacle) {
     v += gravity;
     if (p.y + v.y < -1.0) {
         /* Left the world, reset particle. */
-        v.x = v.x + random / 2.0 + (index.x - 0.5);
+        v.x = v.x + random / 2.0 + (index.x - 0.5) * sign(random);
         v.y = 0.0;
     }
     if (length(obstacle) > 0.5) {
