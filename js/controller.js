@@ -79,10 +79,10 @@ function Controller(particles) {
         _this.particles.updateObstacles();
     });
     $('.controls .save').on('click', function() {
-        localStorage.obstacles = JSON.stringify(_this.save());
+        localStorage.snapshot = JSON.stringify(_this.save());
     });
     $('.controls .restore').on('click', function() {
-        _this.restore(JSON.parse(localStorage.obstacles));
+        _this.restore(JSON.parse(localStorage.snapshot));
         updateCount();
     });
 }
@@ -138,6 +138,9 @@ Controller.prototype.adjust = function(factor) {
  */
 Controller.prototype.save = function() {
     var save = {
+        gravity: this.particles.gravity,
+        wind: this.particles.wind,
+        size: this.particles.size,
         particles: this.particles.getCount(),
         obstacles: []
     };
@@ -163,6 +166,9 @@ Controller.prototype.restore = function(save) {
     }
     this.clear();
     var ps = this.particles;
+    ps.size = save.size;
+    ps.gravity = save.gravity;
+    ps.wind = save.wind;
     save.obstacles.forEach(function(o) {
         ps.addObstacle(o.position, o.size);
     });
