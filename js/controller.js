@@ -58,13 +58,8 @@ function Controller(particles) {
     $('.controls .reset').on('click', function() {
         _this.adjust(1);
     });
-    $('.controls .bigger').on('click', function() {
-        _this.obstacle.size *= 1.5;
-        _this.particles.updateObstacles();
-    });
-    $('.controls .smaller').on('click', function() {
-        _this.obstacle.size *= 0.67;
-        _this.particles.updateObstacles();
+    $('.controls .particles .size').on('input', function() {
+        _this.particles.size = Number($(this).val());
     });
     $('.controls .obstacles .color').on('change', function(event) {
         var value = $(event.target).val();
@@ -72,6 +67,10 @@ function Controller(particles) {
     });
     $('.controls .clear').on('click', function() {
         _this.clear();
+    });
+    $('.controls .obstacles .size').on('change', function() {
+        _this.obstacle.size = Number($(this).val());
+        _this.particles.updateObstacles();
     });
     $('.controls .save').on('click', function() {
         localStorage.obstacles = JSON.stringify(_this.save());

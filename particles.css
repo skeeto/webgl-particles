@@ -62,3 +62,19 @@ h1 {
 a:link, a:visited {
     color: pink;
 }
+
+.controls .slider label {
+    font-weight: normal;
+    width: 100px;
+    height: 25px;
+    margin: 2px 0;
+}
+
+.controls .slider {
+    margin-left: 94px;
+    display: block;
+}
+
+.slider input {
+    width: 308px;
+}

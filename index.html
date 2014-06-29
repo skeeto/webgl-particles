@@ -21,13 +21,20 @@
         <button class="decrease">Fewer</button>
         <input class="color" type="color" value="#249EFF"/>
         <button class="reset">Reset</button>
+        <div class="slider">
+          <label>Diameter:</label>
+          <input class="size" type="range" min="1" max="16" value="3"/>
+        </div>
       </div>
       <div class="obstacles">
         <label>Obstacles:</label>
-        <button class="bigger">Bigger</button>
-        <button class="smaller">Smaller</button>
         <input class="color" type="color" value="#735940"/>
         <button class="clear">Clear</button>
+        <div class="slider">
+          <label>Radius:</label>
+          <input class="size" step="2" type="range"
+                 min="2" max="128" value="20"/>
+        </div>
       </div>
       <div class="snapshot">
         <label>Snapshot:</label>
