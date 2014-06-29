@@ -115,8 +115,10 @@ Controller.prototype.place = function() {
  * @returns {Controller} this
  */
 Controller.prototype.clear = function() {
+    var size = this.obstacle.size;
     this.particles.obstacles.length = 0;
     this.init();
+    this.obstacle.size = size;
     return this;
 };
 
