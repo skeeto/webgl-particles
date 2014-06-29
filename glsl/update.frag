@@ -29,31 +29,30 @@ vec2 encode(float value, float scale) {
 }
 
 void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
-    p += v + wind;
-    if (p.y <= 0.0 || p.x < 0.0 || p.x > worldsize.x) {
+    if (p.y < 0.0 || p.x < 0.0 || p.x > worldsize.x) {
         /* Left the world, reset particle. */
-        p.y += worldsize.y + random + (index.y - 0.5) * sign(random);
-        p.x = mod(p.x + random * 10.0, worldsize.x);
-    }
-    if (length(obstacle) > 0.5) {
-        p -= v;        // back out velocity change
+        p.y += worldsize.y + random + index.y * 0.5 * sign(random);
+        p.x = mod(p.x + random * 10.0 + index.x * sign(random), worldsize.x);
+    } else if (length(obstacle) > 0.5) {
         p += obstacle; // push out out obstacle
+    } else {
+        p += v + wind;
     }
 }
 
 void updateVelocity(inout vec2 p, inout vec2 v, vec2 obstacle) {
-    v += gravity;
-    if (p.y + v.y < -1.0) {
+    if (p.y < 0.0) {
         /* Left the world, reset particle. */
-        v.x = v.x + random / 2.0 + (index.x - 0.5) * sign(random);
-        v.y = 0.0;
-    }
-    if (length(obstacle) > 0.5) {
+        v.x = v.x + random / 2.0 - index.x * 0.1 * sign(random);
+        v.y = index.y * 0.25 * sign(random);
+    } else if (length(obstacle) > 0.5) {
         if (length(v) < 0.5) {
             v = obstacle * 0.5; // velocity too low, jiggle outward
         } else {
             v = reflect(v, obstacle) * restitution; // bounce
         }
+    } else {
+        v += gravity;
     }
 }
 
