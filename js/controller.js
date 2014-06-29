@@ -1,4 +1,4 @@
-/*global updateCount x*/
+/*global updateCount LZString */
 
 /**
  * User interface connection to the simulation.
@@ -82,10 +82,20 @@ function Controller(particles) {
         _this.particles.updateObstacles();
     });
     $('.controls .save').on('click', function() {
-        localStorage.snapshot = JSON.stringify(_this.save());
+        var data = JSON.stringify(_this.save()),
+            armored = LZString.compressToBase64(data);
+        localStorage.snapshot = data;
+        $('.controls .snapshot .manual').val(armored);
     });
     $('.controls .restore').on('click', function() {
-        _this.restore(JSON.parse(localStorage.snapshot));
+        var data = null,
+            manual = $('.controls .snapshot .manual').val();
+        if (manual !== '') {
+            data = LZString.decompressFromBase64(manual);
+        } else {
+            data = JSON.parse(localStorage.snapshot);
+        }
+        _this.restore();
         updateCount();
     });
 }
