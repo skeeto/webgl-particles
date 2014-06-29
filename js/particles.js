@@ -32,7 +32,7 @@ function Particles(canvas, nparticles, size) {
     /* Simulation parameters. */
     this.running = false;
     this.gravity = [0, -0.05];
-    this.wind = [0.1, 0];
+    this.wind = [0, 0];
     this.restitution = 0.25;
     this.obstacles = [];
 
