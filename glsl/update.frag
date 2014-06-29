@@ -9,6 +9,7 @@ uniform int derivative;
 uniform vec2 scale;
 uniform float random;
 uniform vec2 gravity;
+uniform vec2 wind;
 uniform float restitution;
 uniform vec2 worldsize;
 varying vec2 index;
@@ -28,7 +29,7 @@ vec2 encode(float value, float scale) {
 }
 
 void updatePosition(inout vec2 p, inout vec2 v, vec2 obstacle) {
-    p += v;
+    p += v + wind;
     if (p.y <= 0.0 || p.x < 0.0 || p.x > worldsize.x) {
         /* Left the world, reset particle. */
         p.y += worldsize.y + random + (index.y - 0.5) * sign(random);
