@@ -12,7 +12,8 @@ function Particles(canvas, nparticles, size) {
         w = canvas.width, h = canvas.height;
     gl.disable(gl.DEPTH_TEST);
     this.worldsize = new Float32Array([w, h]);
-    this.scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 3);
+    var scale = Math.floor(Math.pow(Particles.BASE, 2) / Math.max(w, h) / 3);
+    this.scale = [scale, scale * 100];
     this.listeners = [];
 
     /* Vertex shader texture access not guaranteed on OpenGL ES 2.0. */
@@ -111,10 +112,10 @@ Particles.prototype.initTextures = function() {
     for (var y = 0; y < th; y++) {
         for (var x = 0; x < tw; x++) {
             var i = y * tw * 4 + x * 4,
-                px = Particles.encode(Math.random() * w, s),
-                py = Particles.encode(Math.random() * h, s),
-                vx = Particles.encode(Math.random() * 1.0 - 0.5, s),
-                vy = Particles.encode(Math.random() * 20.0, s);
+                px = Particles.encode(Math.random() * w, s[0]),
+                py = Particles.encode(Math.random() * h, s[0]),
+                vx = Particles.encode(Math.random() * 1.0 - 0.5, s[1]),
+                vy = Particles.encode(Math.random() * 2.5, s[1]);
             rgbaP[i + 0] = px[0];
             rgbaP[i + 1] = px[1];
             rgbaP[i + 2] = py[0];
@@ -187,8 +188,8 @@ Particles.prototype.get = function() {
     for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
             var i = y * w * 4 + x * 4,
-                px = Particles.decode([rgba[i + 0], rgba[i + 1]], s),
-                py = Particles.decode([rgba[i + 2], rgba[i + 3]], s);
+                px = Particles.decode([rgba[i + 0], rgba[i + 1]], s[0]),
+                py = Particles.decode([rgba[i + 2], rgba[i + 3]], s[0]);
             particles.push({x: px, y: py});
         }
     }
