@@ -61,6 +61,12 @@ function Controller(particles) {
     $('.controls .particles .size').on('input', function() {
         _this.particles.size = Number($(this).val());
     });
+    $('.controls .particles .gravity').on('input', function() {
+        _this.particles.gravity[1] = -Number($(this).val());
+    });
+    $('.controls .particles .wind').on('input', function() {
+        _this.particles.wind[0] = Number($(this).val());
+    });
     $('.controls .obstacles .color').on('change', function(event) {
         var value = $(event.target).val();
         _this.particles.obstacleColor = Controller.parseColor(value);

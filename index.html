@@ -25,6 +25,16 @@
           <label>Diameter:</label>
           <input class="size" type="range" min="1" max="16" value="3"/>
         </div>
+        <div class="slider">
+          <label>Gravity:</label>
+          <input class="gravity" type="range" step="0.01"
+                 min="0" max="0.5" value="0.05"/>
+        </div>
+        <div class="slider">
+          <label>Wind:</label>
+          <input class="wind" type="range" step="0.1"
+                 min="-4" max="4" value="0"/>
+        </div>
       </div>
       <div class="obstacles">
         <label>Obstacles:</label>
@@ -32,7 +42,7 @@
         <button class="clear">Clear</button>
         <div class="slider">
           <label>Radius:</label>
-          <input class="size" step="2" type="range"
+          <input class="size" type="range" step="2"
                  min="2" max="128" value="20"/>
         </div>
       </div>
