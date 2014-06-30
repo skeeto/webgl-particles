@@ -131,7 +131,8 @@ Controller.prototype.clear = function() {
  * @returns {Controller} this
  */
 Controller.prototype.adjust = function(factor) {
-    this.particles.setCount(this.particles.getCount() * factor);
+    var current = this.particles.getCount();
+    this.particles.setCount(Math.max(1, current * factor));
     updateCount();
 };
 
