@@ -145,6 +145,7 @@ Controller.prototype.save = function() {
         gravity: this.particles.gravity,
         wind: this.particles.wind,
         size: this.particles.size,
+        restitution: this.particles.restitution,
         particles: this.particles.getCount(),
         obstacles: []
     };
@@ -173,6 +174,7 @@ Controller.prototype.restore = function(save) {
     ps.size = save.size;
     ps.gravity = save.gravity;
     ps.wind = save.wind;
+    ps.restitution = save.restitution;
     save.obstacles.forEach(function(o) {
         ps.addObstacle(o.position, o.size);
     });
