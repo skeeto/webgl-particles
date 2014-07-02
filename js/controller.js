@@ -45,49 +45,51 @@ function Controller(particles) {
             break;
         }
     });
-    $('.controls .increase').on('click', function() {
-        _this.adjust(2);
-    });
-    $('.controls .decrease').on('click', function() {
-        _this.adjust(0.5);
-    });
-    $('.controls .particles .color').on('change', function(event) {
-        var value = $(event.target).val();
-        _this.particles.color = Controller.parseColor(value);
-    });
-    $('.controls .reset').on('click', function() {
-        _this.adjust(1);
-    });
-    $('.controls .particles .size').on('input', function() {
-        _this.particles.size = Number($(this).val());
-    });
-    $('.controls .particles .gravity').on('input', function() {
-        _this.particles.gravity[1] = -Number($(this).val());
-    });
-    $('.controls .particles .wind').on('input', function() {
-        _this.particles.wind[0] = Number($(this).val());
-    });
-    $('.controls .particles .restitution').on('input', function() {
-        _this.particles.restitution = Number($(this).val());
-    });
-    $('.controls .obstacles .color').on('change', function(event) {
-        var value = $(event.target).val();
-        _this.particles.obstacleColor = Controller.parseColor(value);
-    });
-    $('.controls .clear').on('click', function() {
-        _this.clear();
-    });
-    $('.controls .obstacles .size').on('change', function() {
-        _this.obstacle.size = Number($(this).val());
-        _this.particles.updateObstacles();
-    });
-    $('.controls .save').on('click', function() {
-        localStorage.snapshot = JSON.stringify(_this.save());
-    });
-    $('.controls .restore').on('click', function() {
-        _this.restore(JSON.parse(localStorage.snapshot));
-        updateCount();
-    });
+    this.controls = {
+        increase: $('.controls .increase').on('click', function() {
+            _this.adjust(2);
+        }),
+        decrease: $('.controls .decrease').on('click', function() {
+            _this.adjust(0.5);
+        }),
+        pcolor: $('.controls .particles .color').on('change', function(event) {
+            var value = $(event.target).val();
+            _this.particles.color = Controller.parseColor(value);
+        }),
+        reset: $('.controls .reset').on('click', function() {
+            _this.adjust(1);
+        }),
+        psize: $('.controls .particles .size').on('input', function() {
+            _this.particles.size = Number($(this).val());
+        }),
+        gravity: $('.controls .particles .gravity').on('input', function() {
+            _this.particles.gravity[1] = -Number($(this).val());
+        }),
+        wind: $('.controls .particles .wind').on('input', function() {
+            _this.particles.wind[0] = Number($(this).val());
+        }),
+        restitution: $('.controls .restitution').on('input', function() {
+            _this.particles.restitution = Number($(this).val());
+        }),
+        ocolor: $('.controls .obstacles .color').on('change', function(event) {
+            var value = $(event.target).val();
+            _this.particles.obstacleColor = Controller.parseColor(value);
+        }),
+        clear: $('.controls .clear').on('click', function() {
+            _this.clear();
+        }),
+        osize: $('.controls .obstacles .size').on('change', function() {
+            _this.obstacle.size = Number($(this).val());
+            _this.particles.updateObstacles();
+        }),
+        save: $('.controls .save').on('click', function() {
+            localStorage.snapshot = JSON.stringify(_this.save());
+        }),
+        restore: $('.controls .restore').on('click', function() {
+            _this.restore(JSON.parse(localStorage.snapshot));
+            updateCount();
+        })
+    };
 }
 
 /**
@@ -171,10 +173,10 @@ Controller.prototype.restore = function(save) {
     }
     this.clear();
     var ps = this.particles;
-    ps.size = save.size;
-    ps.gravity = save.gravity;
-    ps.wind = save.wind;
-    ps.restitution = save.restitution;
+    this.controls.psize.val(ps.size = save.size);
+    this.controls.gravity.val(ps.gravity = save.gravity);
+    this.controls.wind.val(ps.wind = save.wind);
+    this.controls.restitution.val(ps.restitution = save.restitution);
     save.obstacles.forEach(function(o) {
         ps.addObstacle(o.position, o.size);
     });
